@@ -60,3 +60,28 @@ class CompareController:
                                           'Сравнение объема тренировчной нагрузки за ' + self.year + ' год')
             self.result_page.show()
             self.prew.close()
+
+        if self.type == 2:
+            result = self.db.get_vids(self.users)
+            data = []
+            for item in result:
+                surname = item[0]
+                temp1 = ['Общая физическая подготовка (%) \n(' + surname + ')', '-', '-', '-', '-', '-', '-', '-']
+                temp2 = ['Специальная физическая подготовка (%) \n(' + surname + ')', '-', '-', '-', '-', '-', '-',
+                         '-']
+                temp3 = ['Участие в спортивных соревнованиях (%) \n(' + surname + ')', '-', '-', '-', '-', '-', '-',
+                         '-']
+                temp4 = ['Техническая подготовка (%) \n(' + surname + ')', '-', '-', '-', '-', '-', '-', '-']
+                temp1[item[5]] = item[1]
+                temp2[item[5]] = item[2]
+                temp3[item[5]] = item[3]
+                temp4[item[5]] = item[4]
+                data.append(temp1)
+                data.append(temp2)
+                data.append(temp3)
+                data.append(temp4)
+            self.result_page = ResultPage(self.username, self.users, self.prew, data,
+                                          self.stages,
+                                          'Соотношения видов спортивной подготовки и иных мероприятий в структуре учебно-тренировочного процесса ' + self.year + ' год')
+            self.result_page.show()
+            self.prew.close()

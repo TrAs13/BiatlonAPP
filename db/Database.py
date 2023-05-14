@@ -321,3 +321,35 @@ group by user'''
 
         self.cursor.execute(sql, (y_s, m_s, y_e, m_e))
         return self.cursor.fetchall()
+
+    def get_vids(self, users):
+        sql = '''select t.username,'Результат спортсмена(' || cast(round(common * 1.0 / (common + spec + sorev + t.tehn), 4) * 100 as text) ||
+       ') \nНорматив(' ||
+       cv.common_fiz || ')' as osnova,
+       'Результат спортсмена(' || cast(round(spec * 1.0 / (common + spec + sorev + t.tehn), 4) * 100 as text) ||
+       ') \nНорматив(' ||
+       cv.spec_fiz || ')'   as osnova2,
+       'Результат спортсмена(' || cast(round(sorev * 1.0 / (common + spec + sorev + t.tehn), 4) * 100 as text) ||
+       ') \nНорматив(' ||
+       cv.sport || ')'      as osnova3,
+       'Результат спортсмена(' || cast(round(t.tehn * 1.0 / (common + spec + sorev + t.tehn), 4) * 100 as text) ||
+       ') \nНорматив(' ||
+       cv.tehn || ')'       as osnova4,
+       cv.stage
+from (select username,
+             sum(walkMin + runMin + runStickMin + byceMin + sportGamesMin + workZalMin)     as common,
+             sum(imitMin + workRolsMin + dfs.skyRolsMin + dfs.skyMin + workSkyMin)          as spec,
+             sum(walkMin + runMin + runStickMin + byceMin + sportGamesMin + workZalMin) / 3 as sorev,
+             sum(holostTrenMin + dfs.shootCnt * 2)                                          as tehn
+      from compare_vids cc
+               join users u
+                    on cc.stage = u.stage
+               join data_from_sheet dfs on dfs.user = u.username
+      where username in ('Гуркина')
+      group by username) t
+         join users u
+              on t.username = u.username
+         join compare_vids cv on cv.stage = u.stage'''
+
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
